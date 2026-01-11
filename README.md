@@ -1,148 +1,123 @@
-🛠️ FixItNow - Sistem de Gestiune Service Electrocasnice
 
-FixItNow este o aplicație complexă dezvoltată în Modern C++ care simulează activitatea unui service de electrocasnice. Proiectul demonstrează utilizarea principiilor OOP, SOLID și a Design Patterns pentru a gestiona un flux de lucru în timp real.
+# 🛠️ FixItNow - Sistem de Gestiune Service Electrocasnice
 
-🚀 Funcționalități Cheie
+**FixItNow** este o aplicație complexă C++ (OOP) care simulează activitatea unui service de electrocasnice. Aplicația gestionează angajați, un catalog de aparate și procesează cereri de reparație în timp real, utilizând algoritmi de alocare inteligentă a resurselor.
 
-1. 👥 Gestiune Resurse Umane (HR)
+---
 
-Polimorfism: Ierarhie de clase pentru Tehnician, Receptioner, Supervizor derivate din clasa abstractă Angajat.
+## 🚀 Funcționalități Principale
 
-Salarizare Dinamică: - Salariu de bază + Spor vechime + Spor funcție.
+### 1. 👥 Gestiune Personal (HR)
+- **Tipuri de angajați:** Tehnicieni, Recepționeri, Supervizori (ierarhie polimorfică).
+- **Calcul Salarial:** Salariu de bază + spor vechime + spor funcție + **bonus de performanță** (2% din reparațiile efectuate de tehnicieni).
+- **Competențe:** Tehnicienii au specializări multiple (ex: "Frigider Samsung", "Televizor LG"), încărcate dinamic din fișiere CSV.
 
-Bonus de Performanță: Tehnicienii primesc automat 2% din valoarea fiecărei reparații finalizate.
+### 2. 📺 Gestiune Electrocasnice (Catalog)
+- Suport pentru diverse tipuri de aparate: **Frigidere** (cu/fără congelator), **Televizoare** (diagonală), **Mașini de Spălat** (capacitate).
+- Gestionarea stocului de modele suportate și afișarea detaliată a specificațiilor.
 
-Competențe Tehnice: Tehnicienii au o listă de specializări (ex: "Frigider Samsung", "Televizor LG"), încărcate dinamic din CSV (format Competenta1|Competenta2).
+### 3. ⚙️ Simulare & Load Balancing (Core Feature)
+- **Simulare în Timp Real:** Sistemul rulează "ticuri" de timp (1 secundă reală = 1 unitate de timp simulată).
+- **Alocare Inteligentă:** Cererile sunt distribuite automat tehnicienilor pe baza unui algoritm complex:
+  1. Verifică **competența** tehnică.
+  2. Verifică **disponibilitatea** (max 3 sarcini active).
+  3. **Load Balancing:** Alege tehnicianul cu cea mai mică încărcare de timp (suma duratelor rămase), nu doar cel cu puține sarcini.
+- **Queue Management:** Cererile care nu pot fi preluate rămân în starea `PENDING` și sunt re-evaluate la următorul tic.
 
-2. 📺 Catalog Electrocasnice
+### 4. 📊 Raportare
+Generare automată de rapoarte în format `.csv`:
+- `raport_top_salarii.csv`: Top 3 angajați după venit.
+- `raport_top_tehnician.csv`: Performanța tehnicianului cu cea mai grea reparație.
+- `raport_asteptare.csv`: Lista cererilor nepreluate, grupate și sortate.
+- **Statistici Defecțiuni:** Raport cu aparatele care nu au putut fi reparate (complexitate 0).
 
-Suport pentru diverse tipuri de echipamente, fiecare cu atribute specifice:
+---
 
-Frigidere: (Congelator Da/Nu)
+## 🏗️ Arhitectură și Tehnologii
 
-Televizoare: (Diagonala)
+Proiectul este scris în **Modern C++** și respectă principiile **SOLID**.
 
-Mașini de Spălat: (Capacitate cuvă)
+### Design Patterns Utilizate
+- **Singleton:** Clasa `Service` asigură o instanță unică a controller-ului principal.
+- **Factory Method:** Clasa `AngajatFactory` gestionează crearea dinamică a tipurilor de angajați pe baza datelor din fișiere.
 
-Validare automată a cererilor în funcție de modelele existente în catalog.
+### Elemente Tehnice
+- **STL (Standard Template Library):** Utilizare extensivă de `std::vector`, `std::map` (pentru statistici), `std::sort` cu funcții lambda.
+- **RTTI (Run-Time Type Information):** Utilizarea `dynamic_cast` pentru gestionarea polimorfismului (ex: atribuirea competențelor doar tehnicienilor).
+- **Multi-threading:** Utilizarea `std::this_thread::sleep_for` și `std::chrono` pentru simularea vizuală a timpului.
+- **Robust Parsing:** Citirea fișierelor CSV cu gestionarea erorilor (`try-catch`) pentru a preveni oprirea aplicației la date corupte.
 
-3. ⚙️ Simulare & Load Balancing (Core Engine)
+---
 
-Sistemul rulează o simulare bazată pe "ticuri" de timp (1 secundă reală = 1 unitate de timp simulată).
+## 📂 Structura Proiectului
 
-Algoritm de Alocare Inteligentă:
-Cererile nu sunt distribuite aleatoriu, ci pe baza unui scor de optimizare:
+```text
+├── src/
+│   ├── main.cpp            # Punctul de intrare
+│   ├── service.cpp/.h      # Logică Singleton & Simulare
+│   ├── menu.cpp/.h         # Interfața cu utilizatorul
+│   ├── angajat.cpp/.h      # Clasa de bază Angajat
+│   ├── tehnician.cpp/.h    # Derivată Tehnician
+│   ├── ... (alte clase derivate)
+│   ├── utils.cpp/.h        # Funcții auxiliare (CNP, Split, Time)
+│   └── raport_generator... # Logică scriere CSV
+├── tests/
+│   ├── angajati.csv        # Baza de date inițială (50 angajați)
+│   └── cereri.txt          # Scenariu de test (200 cereri)
+└── README.md
 
-Competență: Tehnicianul trebuie să știe să repare Marca și Tipul aparatului.
+```
 
-Disponibilitate: Maxim 3 sarcini simultane per tehnician.
+---
 
-Time-Based Load Balancing: Dintre candidații eligibili, este ales cel cu cea mai mică încărcare totală de timp (suma orelor rămase de muncă), asigurând o distribuție echitabilă a efortului.
+## 💻 Cum se rulează
 
-Queue Management: Cererile care nu pot fi preluate imediat rămân în starea PENDING și sunt re-procesate la fiecare tic.
-
-4. 📊 Raportare Avansată
-
-Generare de rapoarte CSV pentru analiză:
-
-raport_top_salarii.csv: Top 3 angajați, ordonați după venit (include bonusurile acumulate).
-
-raport_top_tehnician.csv: Tehnicianul care a gestionat cea mai complexă reparație.
-
-raport_asteptare.csv: Lista cererilor în așteptare, grupate pe categorii și sortate alfabetic.
-
-Istoric Reparații: Vizualizarea aparatelor reparate cu succes și a celor declarate INVALID (nereparabile).
-
-🏗️ Arhitectură și Tehnologii
-
-Proiectul este construit modular, respectând standardele C++11/14.
-
-Design Patterns
-
-Singleton: Clasa Service acționează ca un controller unic care gestionează starea globală a aplicației.
-
-Factory Method: Clasa AngajatFactory abstractizează crearea instanțelor de angajați, permițând extensibilitatea ușoară a tipurilor de personal.
-
-Elemente Tehnice
-
-STL Containers: Utilizare extensivă de std::vector, std::map (pentru statistici de frecvență), std::pair.
-
-Lambda Expressions: Folosite pentru algoritmi de sortare complecși (criterii multiple).
-
-RTTI (dynamic_cast): Identificarea tipului de angajat la runtime pentru atribuirea sarcinilor specifice.
-
-Multi-threading: Utilizarea std::this_thread::sleep_for pentru a crea efectul de simulare în timp real.
-
-Robust Parsing: Citirea fișierelor este protejată la erori; liniile corupte sunt raportate în consolă fără a opri execuția programului (try-catch blocks).
-
-📂 Structura Fișierelor
-
-FixItNow/
-├── main.cpp                # Punctul de intrare
-├── service.cpp/.h          # Logică Singleton & Simulare
-├── menu.cpp/.h             # Interfața utilizator (Consolă)
-├── angajat_factory.cpp/.h  # Design Pattern Factory
-├── raport_generator.cpp/.h # Logică generare CSV
-├── Entitati/
-│   ├── angajat.cpp/.h      # Clasa de bază
-│   ├── tehnician.cpp/.h    # Derivată
-│   ├── receptioner.cpp/.h  # Derivată
-│   ├── supervizor.cpp/.h   # Derivată
-│   ├── electrocasnic.cpp/.h 
-│   └── cerere_reparatie.cpp/.h
-├── Utils/
-│   └── utils.cpp/.h        # Validare CNP, String Split, Timestamp
-└── tests/                  # Folder obligatoriu pentru rulare
-    ├── angajati.csv        # Baza de date inițială (50+ angajați)
-    ├── cereri.txt          # Scenariu de test (200+ cereri)
-    └── README.md           # Documentația testelor
-
-
-💻 Instrucțiuni de Rulare
-
-1. Compilare
+### 1. Compilare
 
 Proiectul nu are dependențe externe. Se poate compila cu orice compiler standard C++ (G++, Clang, MSVC).
 
-Comandă (Terminal):
+**Exemplu (Terminal/Linux/MacOS):**
 
+```bash
 g++ *.cpp -o fixitnow
 
+```
 
-2. Rulare
+### 2. Rulare
 
-Asigurați-vă că folderul tests/ este prezent în același director cu executabilul și conține fișierele de date.
+Asigurați-vă că folderul `tests/` conține fișierele `angajati.csv` și `cereri.txt` în același director cu executabilul.
 
-Windows:
-
-fixitnow.exe
-
-
-Linux/MacOS:
-
+```bash
 ./fixitnow
 
+```
 
-🧪 Scenariu de Test (Stress Test)
+---
 
-Proiectul vine pre-configurat cu un set masiv de date în folderul tests/ pentru a demonstra stabilitatea:
+## 🧪 Testare
 
-50 Angajați: Inclusiv 40 de tehnicieni cu diverse competențe.
+Proiectul include un set de date pentru **Stress Test** în folderul `tests/`:
 
-200 Cereri: Un mix de cereri valide, cereri imposibil de reparat (Complexitate 0) și date eronate pentru testarea parser-ului.
+* **50 Angajați:** Acoperă toate rolurile și o gamă largă de competențe pentru tehnicieni.
+* **200 Cereri:** Include cazuri valide, aparate nereparabile (Complexitate 0) și linii invalide pentru testarea parser-ului.
 
-Cum să testați:
+Pentru a rula testul:
 
-Porniți aplicația.
+1. Porniți aplicația.
+2. Datele se încarcă automat la pornire.
+3. Selectați opțiunea **3 (Simulare)** din meniu.
+4. Introduceți un număr de ticuri (ex: 50) pentru a vedea cum sunt procesate cele 200 de cereri.
 
-Alegeți opțiunea 3 (Simulare) din meniu.
+---
 
-Introduceți un număr de ticuri (ex: 60) și urmăriți în consolă cum cele 200 de cereri sunt alocate dinamic tehnicienilor.
+## 📝 Autor
 
-📝 Autor
+**Nume:** [Numele Tau]
 
-Student: [Numele Tau]
+**Grupa:** [Grupa Ta]
 
-Grupa: [Grupa Ta]
+Proiect realizat pentru cursul de Programare Orientată pe Obiecte (POO), 2025.
 
-Proiect realizat pentru cursul de **Programare Orientată pe Obiecte
+```
+
+```
