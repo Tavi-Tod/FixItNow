@@ -112,11 +112,11 @@ Pentru a rula testul:
 
 ## 📝 Autor
 
-**Nume:** [Numele Tau]
+**Nume:** Toderașc Octavian-Gabriel
 
-**Grupa:** [Grupa Ta]
+**Grupa:** 323AA
 
-Proiect realizat pentru cursul de Programare Orientată pe Obiecte (POO), 2025.
+Proiect realizat pentru cursul de Programare Orientată pe Obiecte (POO), 2026.
 
 ```
 
